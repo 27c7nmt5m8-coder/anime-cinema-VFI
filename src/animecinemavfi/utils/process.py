@@ -70,8 +70,13 @@ class ManagedProcess:
 
     def _drain_stderr(self) -> None:
         assert self.process.stderr is not None
-        while data := self.process.stderr.readline(8192):
-            self.stderr.append(data.decode("utf-8", errors="replace").rstrip())
+        try:
+            while data := self.process.stderr.readline(8192):
+                self.stderr.append(data.decode("utf-8", errors="replace").rstrip())
+        except ValueError:
+            # A delayed reader can resume after close() finishes its bounded join.
+            if not self.process.stderr.closed:
+                raise
 
     def error(self) -> ProcessError:
         self._drain.join(timeout=0.2)

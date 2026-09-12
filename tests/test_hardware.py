@@ -91,7 +91,8 @@ def test_windows_long_unicode_path_end_to_end(tmp_path, sample_factory, monkeypa
     monkeypatch.setattr(
         GPUManager, "detect", lambda *_: GPUInfo("test", False, None, None, "none", "test", "none")
     )
-    source = sample_factory("日本語 入力.mp4", duration="0.25", audio=2)
+    # Six 24fps frames span exactly 0.25s and produce fifteen 60fps frames.
+    source = sample_factory("日本語 入力.mp4", fps="24", duration="0.25", audio=2)
     directory = tmp_path
     while len(str(directory)) < 280:
         directory /= "長めのパス 空白付き"

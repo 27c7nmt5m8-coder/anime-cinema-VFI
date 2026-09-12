@@ -27,11 +27,13 @@ jobs:
       - run: python -m ruff check src tests scripts
       - run: python -m ruff format --check src tests scripts
       - run: python -m mypy src
-      - run: python -m pytest -q -m "not rife" --junitxml=test-artifacts/ci.xml
+      - run: python -m pytest -q -m "not rife" -W error::pytest.PytestUnhandledThreadExceptionWarning --junitxml=test-artifacts/ci.xml
         env:
           QT_QPA_PLATFORM: offscreen
       - name: Collect environment and encoder diagnostics
         if: always()
+        env:
+          PYTHONIOENCODING: utf-8
         run: |
           python -c "from pathlib import Path; Path('test-artifacts').mkdir(exist_ok=True)"
           python -m animecinemavfi diagnose --encoders --output test-artifacts/diagnostics.json
