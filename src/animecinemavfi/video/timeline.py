@@ -1,5 +1,5 @@
 import sqlite3
-from collections.abc import Callable, Iterator
+from collections.abc import Callable, Generator
 from dataclasses import dataclass
 from fractions import Fraction
 from pathlib import Path
@@ -118,11 +118,15 @@ class TimelineIndex:
         ).fetchone()
         return int(row[0]) if row else 0
 
-    def stamps(self, start: int = 0) -> Iterator[FrameStamp]:
-        for index, pts in self.connection.execute(
+    def stamps(self, start: int = 0) -> Generator[FrameStamp, None, None]:
+        cursor = self.connection.execute(
             "SELECT i, pts FROM frames WHERE i >= ? ORDER BY i", (start,)
-        ):
-            yield FrameStamp(index, pts * self.info.time_base - self.origin)
+        )
+        try:
+            for index, pts in cursor:
+                yield FrameStamp(index, pts * self.info.time_base - self.origin)
+        finally:
+            cursor.close()
 
     def close(self) -> None:
         self.connection.close()

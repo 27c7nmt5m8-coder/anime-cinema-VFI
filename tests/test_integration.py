@@ -228,7 +228,7 @@ def test_vfr_detection_and_explicit_opt_in(sample_factory, pipeline, tmp_path):
         pipeline.run(JobSpec(vfr, output, config), JobControl())
     assert not output.exists()
     result = pipeline.run(JobSpec(vfr, output, replace(config, allow_vfr=True)), JobControl())
-    assert json.loads(result.report.read_text())["vfr_detected"]
+    assert json.loads(result.report.read_text(encoding="utf-8"))["vfr_detected"]
 
 
 def test_audio_offset_preserved(sample_factory, pipeline, tmp_path):

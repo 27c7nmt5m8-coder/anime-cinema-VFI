@@ -34,6 +34,18 @@ def test_cancel_interrupts_blocked_external_reader():
         assert process.process.poll() is not None
 
 
+def test_cancelled_finish_releases_process_resources():
+    control = JobControl()
+    with ManagedProcess([sys.executable, "-c", "import time;time.sleep(30)"], control) as process:
+        control.cancel()
+        with pytest.raises(Cancelled):
+            process.finish()
+        # Cancellation must finish cleanup before the caller receives the exception.
+        assert process.process.returncode is not None
+        assert process.input.closed
+        assert process.output.closed
+
+
 @pytest.mark.integration
 def test_model_failure_cleans_workspace(sample_factory, tmp_path, monkeypatch):
     source = sample_factory(audio=0)

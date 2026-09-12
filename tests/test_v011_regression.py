@@ -64,7 +64,7 @@ def test_source_multiplier_full_pipeline_and_tracks(sample_factory, tmp_path, mo
     assert info.fps == F(120000, 1001)
     assert result.frames == 120
     assert [t.language for t in info.audio] == ["jpn", "eng"]
-    data = json.loads(result.report.read_text())
+    data = json.loads(result.report.read_text(encoding="utf-8"))
     assert data["settings"]["fps_mode"] == "source"
     assert data["settings"]["source_multiplier"] == 5
     assert data["settings"]["output_fps"] == "120000/1001"

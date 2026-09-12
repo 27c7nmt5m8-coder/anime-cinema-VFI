@@ -7,7 +7,7 @@ from collections.abc import Callable
 from typing import BinaryIO, cast
 
 from animecinemavfi.core.control import JobControl
-from animecinemavfi.core.errors import ProcessError
+from animecinemavfi.core.errors import Cancelled, ProcessError
 
 
 def read_exact(stream: BinaryIO, size: int) -> bytes:
@@ -80,18 +80,23 @@ class ManagedProcess:
         )
 
     def finish(self, timeout: float = 120) -> None:
-        deadline = time.monotonic() + timeout
-        while self.process.poll() is None:
+        """Wait for exit, completing resource cleanup before propagating cancellation."""
+        try:
+            deadline = time.monotonic() + timeout
+            while self.process.poll() is None:
+                self.control.raise_if_cancelled()
+                if time.monotonic() >= deadline:
+                    self.close()
+                    raise ProcessError(f"{self.label}の終了待ちがタイムアウトしました。")
+                try:
+                    self.process.wait(timeout=0.1)
+                except subprocess.TimeoutExpired:
+                    pass
+            self._drain.join(timeout=2)
             self.control.raise_if_cancelled()
-            if time.monotonic() >= deadline:
-                self.close()
-                raise ProcessError(f"{self.label}の終了待ちがタイムアウトしました。")
-            try:
-                self.process.wait(timeout=0.1)
-            except subprocess.TimeoutExpired:
-                pass
-        self._drain.join(timeout=2)
-        self.control.raise_if_cancelled()
+        except Cancelled:
+            self.close()
+            raise
         if self.process.returncode:
             raise self.error()
 

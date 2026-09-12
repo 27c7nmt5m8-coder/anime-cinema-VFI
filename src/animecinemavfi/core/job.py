@@ -265,7 +265,8 @@ class JobManager:
                 )
                 stack.callback(original_encoder.close)
             detector = SceneDetector(config.scene_threshold)
-            stamps = iter(timeline.stamps(first))
+            stamps = timeline.stamps(first)
+            stack.callback(stamps.close)
             left_stamp = next(stamps)
             left = reader.read(left_stamp.time)
             right_stamp = next(stamps, None) if source_count > 1 else None

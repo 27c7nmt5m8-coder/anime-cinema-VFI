@@ -9,14 +9,15 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: FFmpeg on Linux
+      - name: FFmpeg and Qt runtime libraries on Linux
         if: runner.os == 'Linux'
-        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg libegl1 libopengl0
       - name: FFmpeg on Windows
         if: runner.os == 'Windows'
         run: choco install ffmpeg --yes --no-progress
@@ -29,7 +30,11 @@ jobs:
       - run: python -m pytest -q -m "not rife" --junitxml=test-artifacts/ci.xml
         env:
           QT_QPA_PLATFORM: offscreen
-      - run: python -m animecinemavfi diagnose --encoders --output test-artifacts/diagnostics.json
+      - name: Collect environment and encoder diagnostics
+        if: always()
+        run: |
+          python -c "from pathlib import Path; Path('test-artifacts').mkdir(exist_ok=True)"
+          python -m animecinemavfi diagnose --encoders --output test-artifacts/diagnostics.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:
