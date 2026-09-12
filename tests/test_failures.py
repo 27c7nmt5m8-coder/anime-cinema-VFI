@@ -34,6 +34,41 @@ def test_cancel_interrupts_blocked_external_reader():
         assert process.process.poll() is not None
 
 
+def test_cancelled_finish_releases_process_resources():
+    control = JobControl()
+    with ManagedProcess([sys.executable, "-c", "import time;time.sleep(30)"], control) as process:
+        control.cancel()
+        with pytest.raises(Cancelled):
+            process.finish()
+        # Cancellation must finish cleanup before the caller receives the exception.
+        assert process.process.returncode is not None
+        assert process.input.closed
+        assert process.output.closed
+
+
+def test_delayed_stderr_reader_tolerates_closed_pipe(monkeypatch):
+    release = threading.Event()
+    failures = []
+    drain_stderr = ManagedProcess._drain_stderr
+
+    def delayed_drain(process):
+        release.wait(timeout=10)
+        try:
+            drain_stderr(process)
+        except Exception as exc:
+            failures.append(exc)
+
+    monkeypatch.setattr(ManagedProcess, "_drain_stderr", delayed_drain)
+    with ManagedProcess([sys.executable, "-c", "pass"], JobControl()) as process:
+        try:
+            process.close()
+        finally:
+            release.set()
+            process._drain.join(timeout=5)
+        assert not process._drain.is_alive()
+        assert not failures
+
+
 @pytest.mark.integration
 def test_model_failure_cleans_workspace(sample_factory, tmp_path, monkeypatch):
     source = sample_factory(audio=0)

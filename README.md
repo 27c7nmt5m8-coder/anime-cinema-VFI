@@ -246,7 +246,16 @@ $env:RIFE_REPO_DIR = (Resolve-Path external\Practical-RIFE).Path
 モデル未指定時の実モデルテストはskipになります。通常の結合テストはテスト専用の
 決定的エンジンを使い、FFmpegは実行します。このエンジンをGUIでAIとして提供することはありません。
 テスト動画はすべて人工生成し、アニメ・映画等の著作権物をリポジトリへ入れていません。
-Windows/Linux向けCI定義も同梱していますが、リモートCIはこの開発中には実行していません。
+GitHub ActionsではWindows/LinuxのPython 3.11で静的検査・型検査・通常テストを実行します。
+CPU版PyTorchを使った検証であり、CUDA・NVENCの実動やGPU性能は別途実機で確認します。
+最新の結果と診断ファイルは[Actions](https://github.com/27c7nmt5m8-coder/anime-cinema-VFI/actions)を参照してください。
+`verification/`と開発レポート内の実行結果は、ソース配布時の記録です。
+
+今回のCI整備では、LinuxのQt依存を追加し、WindowsでのUTF-8レポート読み取りと
+テスト動画生成を修正しました。キャンセル時の子プロセス終了待ちと、プレビュー・キャンセル時の
+SQLite索引の解放も修正し、再発を検知するテストを追加しています。
+診断ログはCIでUTF-8出力とし、終了時に遅れて動くstderr読み取りも閉じたパイプを扱えるようにしました。
+開発時の維持事項と検証手順は[AGENTS.md](AGENTS.md)にまとめています。
 
 ## ディレクトリ構成
 

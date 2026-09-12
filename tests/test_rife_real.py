@@ -37,7 +37,7 @@ def test_official_rife_short_video(sample_factory, tmp_path):
     assert result.frames == 300
     assert result.interpolated > 0
     assert result.reference and result.reference.exists()
-    assert json.loads(result.report.read_text())["model_id"] == AppConfig().model_id
+    assert json.loads(result.report.read_text(encoding="utf-8"))["model_id"] == AppConfig().model_id
 
 
 def test_official_rife_source_multiplier(sample_factory, tmp_path):
@@ -57,7 +57,7 @@ def test_official_rife_source_multiplier(sample_factory, tmp_path):
         ),
         JobControl(),
     )
-    data = json.loads(result.report.read_text())
+    data = json.loads(result.report.read_text(encoding="utf-8"))
     assert result.frames == 120
     assert result.interpolated > 0
     assert data["settings"]["output_fps"] == "120000/1001"

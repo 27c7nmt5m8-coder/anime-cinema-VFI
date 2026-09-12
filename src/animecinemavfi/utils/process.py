@@ -7,7 +7,7 @@ from collections.abc import Callable
 from typing import BinaryIO, cast
 
 from animecinemavfi.core.control import JobControl
-from animecinemavfi.core.errors import ProcessError
+from animecinemavfi.core.errors import Cancelled, ProcessError
 
 
 def read_exact(stream: BinaryIO, size: int) -> bytes:
@@ -70,8 +70,13 @@ class ManagedProcess:
 
     def _drain_stderr(self) -> None:
         assert self.process.stderr is not None
-        while data := self.process.stderr.readline(8192):
-            self.stderr.append(data.decode("utf-8", errors="replace").rstrip())
+        try:
+            while data := self.process.stderr.readline(8192):
+                self.stderr.append(data.decode("utf-8", errors="replace").rstrip())
+        except ValueError:
+            # A delayed reader can resume after close() finishes its bounded join.
+            if not self.process.stderr.closed:
+                raise
 
     def error(self) -> ProcessError:
         self._drain.join(timeout=0.2)
@@ -80,18 +85,23 @@ class ManagedProcess:
         )
 
     def finish(self, timeout: float = 120) -> None:
-        deadline = time.monotonic() + timeout
-        while self.process.poll() is None:
+        """Wait for exit, completing resource cleanup before propagating cancellation."""
+        try:
+            deadline = time.monotonic() + timeout
+            while self.process.poll() is None:
+                self.control.raise_if_cancelled()
+                if time.monotonic() >= deadline:
+                    self.close()
+                    raise ProcessError(f"{self.label}の終了待ちがタイムアウトしました。")
+                try:
+                    self.process.wait(timeout=0.1)
+                except subprocess.TimeoutExpired:
+                    pass
+            self._drain.join(timeout=2)
             self.control.raise_if_cancelled()
-            if time.monotonic() >= deadline:
-                self.close()
-                raise ProcessError(f"{self.label}の終了待ちがタイムアウトしました。")
-            try:
-                self.process.wait(timeout=0.1)
-            except subprocess.TimeoutExpired:
-                pass
-        self._drain.join(timeout=2)
-        self.control.raise_if_cancelled()
+        except Cancelled:
+            self.close()
+            raise
         if self.process.returncode:
             raise self.error()
 
