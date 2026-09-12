@@ -1,0 +1,112 @@
+{
+  "application_version": "0.1.1",
+  "os": "Linux-6.18.35-x86_64-with-glibc2.39",
+  "python": "3.11.16",
+  "recommended_rife_python": "3.11",
+  "gpu": {
+    "name": "CPU / GPU未検出",
+    "cuda_available": false,
+    "total_mb": null,
+    "free_mb": null,
+    "driver": "unknown",
+    "torch_version": "2.14.0+cpu",
+    "cuda_version": "None",
+    "diagnostic": ""
+  },
+  "tools": {
+    "ffmpeg": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers",
+    "ffprobe": "ffprobe version 6.1.1-3ubuntu5 Copyright (c) 2007-2023 the FFmpeg developers"
+  },
+  "encoder_capabilities": {
+    "libx264": {
+      "codec": "h264",
+      "hardware": "software",
+      "pixel_formats": [
+        "yuv420p"
+      ],
+      "bit_depths": [
+        8
+      ],
+      "hdr": false,
+      "color_metadata": true
+    },
+    "libx265": {
+      "codec": "hevc",
+      "hardware": "software",
+      "pixel_formats": [
+        "yuv420p"
+      ],
+      "bit_depths": [
+        8
+      ],
+      "hdr": false,
+      "color_metadata": true
+    },
+    "h264_nvenc": {
+      "codec": "h264",
+      "hardware": "nvidia",
+      "pixel_formats": [
+        "yuv420p"
+      ],
+      "bit_depths": [
+        8
+      ],
+      "hdr": false,
+      "color_metadata": true
+    },
+    "hevc_nvenc": {
+      "codec": "hevc",
+      "hardware": "nvidia",
+      "pixel_formats": [
+        "yuv420p"
+      ],
+      "bit_depths": [
+        8
+      ],
+      "hdr": false,
+      "color_metadata": true
+    }
+  },
+  "encoder_tests": [
+    {
+      "encoder": "libx264",
+      "status": "passed",
+      "reason": "3-frame encode + container/SPS VUI/SAR/8bit verified",
+      "color": {
+        "primaries": "bt709",
+        "transfer": "bt709",
+        "matrix": "bt709",
+        "range": "tv",
+        "bit_depth": 8,
+        "pixel_format": "yuv420p",
+        "side_data": []
+      }
+    },
+    {
+      "encoder": "libx265",
+      "status": "passed",
+      "reason": "3-frame encode + container/SPS VUI/SAR/8bit verified",
+      "color": {
+        "primaries": "bt709",
+        "transfer": "bt709",
+        "matrix": "bt709",
+        "range": "tv",
+        "bit_depth": 8,
+        "pixel_format": "yuv420p",
+        "side_data": []
+      }
+    },
+    {
+      "encoder": "h264_nvenc",
+      "status": "unavailable",
+      "reason": "2026-09-10 09:09:15,886 ERROR FFmpeg encode失敗 (exit=255):\n[h264_nvenc @ 0x561f49589100] Cannot load libcuda.so.1\n[vost#0:0/h264_nvenc @ 0x561f49588d40] Error while opening encoder - maybe incorrect parameters such as bit_rate, rate, width or height.\nError while filtering: Operation not permitted\n[out#0/mp4 @ 0x561f49587900] Nothing was written into output file, because at least one of its streams received no packets.",
+      "color": null
+    },
+    {
+      "encoder": "hevc_nvenc",
+      "status": "unavailable",
+      "reason": "2026-09-10 09:09:16,028 ERROR FFmpeg encode失敗 (exit=255):\n[hevc_nvenc @ 0x55c277994240] Cannot load libcuda.so.1\n[vost#0:0/hevc_nvenc @ 0x55c277993e40] Error while opening encoder - maybe incorrect parameters such as bit_rate, rate, width or height.\nError while filtering: Operation not permitted\n[out#0/mp4 @ 0x55c277992a00] Nothing was written into output file, because at least one of its streams received no packets.",
+      "color": null
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "animecinemavfi": "0.1.1",
+  "numpy": "2.2.6",
+  "PySide6": "6.11.2",
+  "torch": "2.14.0+cpu",
+  "torchvision": "0.29.0+cpu",
+  "pytest": "9.1.1",
+  "ruff": "0.16.6",
+  "mypy": "2.3.1",
+  "python": "3.11.16",
+  "os": "Linux-6.18.35-x86_64-with-glibc2.39",
+  "ffmpeg": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers"
+}

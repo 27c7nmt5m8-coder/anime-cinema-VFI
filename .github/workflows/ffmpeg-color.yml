@@ -1,0 +1,38 @@
+name: FFmpeg version color regression
+on: [workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  color:
+    strategy:
+      fail-fast: false
+      matrix:
+        ffmpeg: ['6.1.6', '7.1.5', '8.1.2']
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: sudo apt-get update && sudo apt-get install -y build-essential nasm pkg-config libx264-dev libx265-dev
+      - name: Build released FFmpeg with software encoders
+        shell: bash
+        env:
+          ACVFI_FFMPEG_VERSION: ${{ matrix.ffmpeg }}
+        run: |
+          curl --fail --location "https://ffmpeg.org/releases/ffmpeg-${ACVFI_FFMPEG_VERSION}.tar.xz" --output "$RUNNER_TEMP/ffmpeg.tar.xz"
+          tar -xf "$RUNNER_TEMP/ffmpeg.tar.xz" -C "$RUNNER_TEMP"
+          cd "$RUNNER_TEMP/ffmpeg-${ACVFI_FFMPEG_VERSION}"
+          ./configure --prefix="$RUNNER_TEMP/acvfi-ffmpeg" --disable-autodetect --disable-doc --disable-debug --disable-ffplay --enable-gpl --enable-libx264 --enable-libx265
+          make -j2
+          make install
+          echo "$RUNNER_TEMP/acvfi-ffmpeg/bin" >> "$GITHUB_PATH"
+      - run: python -m pip install -r requirements-core.txt -e ".[dev]"
+      - run: python -m pytest -q tests/test_color_encoding.py tests/test_metadata.py tests/test_integration.py tests/test_v011_regression.py --junitxml=test-artifacts/color.xml
+      - run: python -m animecinemavfi diagnose --encoders --output test-artifacts/diagnostics.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ffmpeg-${{ matrix.ffmpeg }}-color
+          path: test-artifacts/*
+# Add FFmpeg 9 only after an official release is available. Not claimed tested.

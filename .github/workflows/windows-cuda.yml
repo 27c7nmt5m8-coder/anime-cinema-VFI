@@ -1,0 +1,26 @@
+name: Windows CUDA real hardware (manual)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  hardware:
+    runs-on: [self-hosted, Windows, X64, cuda]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install reference Python environment
+        shell: pwsh
+        run: ./Setup.ps1 -Backend cuda -CudaChannel cu128
+      - name: Run gates with runner-provided official model and FFmpeg
+        shell: pwsh
+        run: ./scripts/verify_windows.ps1 -ModelDir $env:RIFE_MODEL_DIR -RepositoryDir $env:RIFE_REPO_DIR -RequireCuda
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: windows-cuda-verification
+          path: test-artifacts/**
+# Runner owner provides RIFE_MODEL_DIR, RIFE_REPO_DIR, NVIDIA driver, FFmpeg on PATH.
+# Manual only: this workflow never executes code automatically on pull_request.

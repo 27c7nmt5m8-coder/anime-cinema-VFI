@@ -1,0 +1,16 @@
+..............................................................ssss...... [ 53%]
+..............................................................           [100%]
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_hardware.py:27: NVENC hardware/driver unavailable: 2026-09-10 09:14:23,118 ERROR FFmpeg encode失敗 (exit=255):
+[h264_nvenc @ 0x55ee59e2d100] Cannot load libcuda.so.1
+[vost#0:0/h264_nvenc @ 0x55ee59e2cd40] Error while opening encoder - maybe incorrect parameters such as bit_rate, rate, width or height.
+Error while filtering: Operation not permitted
+[out#0/mp4 @ 0x55ee59e2b900] Nothing was written into output file, because at least one of its streams received no packets.
+SKIPPED [1] tests/test_hardware.py:27: NVENC hardware/driver unavailable: 2026-09-10 09:14:23,210 ERROR FFmpeg encode失敗 (exit=255):
+[hevc_nvenc @ 0x5557c621c240] Cannot load libcuda.so.1
+[vost#0:0/hevc_nvenc @ 0x5557c621be40] Error while opening encoder - maybe incorrect parameters such as bit_rate, rate, width or height.
+Error while filtering: Operation not permitted
+[out#0/mp4 @ 0x5557c621aa00] Nothing was written into output file, because at least one of its streams received no packets.
+SKIPPED [1] tests/test_hardware.py:37: CUDA hardware/PyTorch unavailable
+SKIPPED [1] tests/test_hardware.py:85: Windows path semantics require Windows
+130 passed, 4 skipped in 33.19s

@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "models": [
+    {
+      "id": "practical-rife-4.25",
+      "name": "Practical-RIFE",
+      "version": "4.25",
+      "path": "external/Practical-RIFE/train_log",
+      "repository_path": "external/Practical-RIFE",
+      "capabilities": [
+        "arbitrary_timestep",
+        "rgb8",
+        "cuda",
+        "cpu",
+        "processing_scale"
+      ],
+      "preferred_content": [
+        "anime",
+        "cinema"
+      ],
+      "vram_requirements": {
+        "minimum_mb": null,
+        "note": "公式の解像度別最低VRAM値は未確認。4Kはscale=0.5を推奨。"
+      },
+      "license_information": {
+        "code": "MIT",
+        "weights": "MIT per official README",
+        "redistribution_verified": false
+      },
+      "source": "https://github.com/hzwer/Practical-RIFE",
+      "download_url": "https://drive.google.com/file/d/1ZKjcbmt1hypiFprJPIKW0Tt0lr_2i7bg/view",
+      "checked_on": "2026-09-09",
+      "upstream_commit": "bbfd2ea90910789a860ea3e2b32a240cd577b75e",
+      "trusted": false,
+      "sha256": {},
+      "frame_capabilities": {
+        "pixel_formats": [
+          "rgb24"
+        ],
+        "dtypes": [
+          "uint8"
+        ],
+        "bit_depths": [
+          8
+        ],
+        "hdr": false,
+        "wide_gamut": false,
+        "arbitrary_timestep": true,
+        "multiple_timesteps": true
+      }
+    }
+  ]
+}

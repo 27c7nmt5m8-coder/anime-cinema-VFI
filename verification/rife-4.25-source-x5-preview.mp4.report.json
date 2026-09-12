@@ -1,0 +1,94 @@
+{
+  "application_version": "0.1.1",
+  "os": "Linux-6.18.35-x86_64-with-glibc2.39",
+  "gpu": {
+    "name": "CPU / GPU未検出",
+    "cuda_available": false,
+    "total_mb": null,
+    "free_mb": null,
+    "driver": "unknown",
+    "torch_version": "2.14.0+cpu",
+    "cuda_version": "None",
+    "diagnostic": ""
+  },
+  "tools": {
+    "ffmpeg": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers",
+    "ffprobe": "ffprobe version 6.1.1-3ubuntu5 Copyright (c) 2007-2023 the FFmpeg developers"
+  },
+  "settings": {
+    "schema_version": 1,
+    "ffmpeg": "ffmpeg",
+    "ffprobe": "ffprobe",
+    "output_fps": "120000/1001",
+    "fps_mode": "source",
+    "source_multiplier": 5,
+    "encoder": "libx264",
+    "quality": "fast",
+    "device": "cpu",
+    "processing_scale": 1.0,
+    "scene_protection": true,
+    "scene_threshold": 0.32,
+    "audio_mode": "copy",
+    "preserve_subtitles": true,
+    "allow_vfr": false,
+    "model_id": "practical-rife-4.25",
+    "reserve_disk_mb": 512
+  },
+  "input": {
+    "stream_index": 0,
+    "width": 128,
+    "height": 72,
+    "fps": "24000/1001",
+    "nominal_fps": "24000/1001",
+    "time_base": "1/24000",
+    "duration": "1001/200",
+    "start_time": "0",
+    "codec": "h264",
+    "color": {
+      "primaries": "bt709",
+      "transfer": "bt709",
+      "matrix": "bt709",
+      "range": "tv",
+      "bit_depth": 8,
+      "pixel_format": "yuv420p",
+      "side_data": []
+    },
+    "audio": [
+      {
+        "index": 1,
+        "codec": "aac",
+        "language": "jpn",
+        "default": true,
+        "dispositions": [
+          "default"
+        ]
+      }
+    ],
+    "subtitles": [],
+    "attachments": 0,
+    "sar": "1",
+    "rotation": 0,
+    "field_order": "progressive",
+    "attachment_tracks": [],
+    "sar_known": true
+  },
+  "actual_duration": "5",
+  "origin": "0",
+  "preview_start": "0",
+  "vfr_detected": false,
+  "output_frames": 600,
+  "interpolated_frames": 476,
+  "protected_frames": 0,
+  "elapsed_seconds": 16.79169211699991,
+  "warnings": [
+    "v0.1はコマ打ち・止め絵の意図を解析しません。シーン保護以外は基本補間です。"
+  ],
+  "model_id": "practical-rife-4.25",
+  "engine_statistics": {
+    "status": "ok",
+    "pair_preparations": 119,
+    "device_transfers": 0,
+    "inferences": 476,
+    "oom_retries": 0
+  }
+}

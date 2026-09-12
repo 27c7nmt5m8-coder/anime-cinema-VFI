@@ -1,0 +1,1 @@
+Qt offscreen startup and input probe completed; screenshot saved; clean event-loop exit.

@@ -1,0 +1,4 @@
+usage: benchmark_rife.py [-h] [--registry REGISTRY] [--pairs PAIRS]
+                         [--width WIDTH] [--height HEIGHT]
+                         [--scale {1.0,0.5,0.25}] --output OUTPUT
+benchmark_rife.py: error: CUDA GPU/PyTorchが必要です。性能値は生成しません。

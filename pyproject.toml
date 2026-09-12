@@ -1,0 +1,51 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "animecinemavfi"
+version = "0.1.1"
+description = "Motion-preserving video interpolation foundation for Windows"
+requires-python = ">=3.11"
+# Windows + Practical-RIFE reference: CPython 3.11, 64-bit.
+classifiers = ["Programming Language :: Python :: 3.11", "Operating System :: Microsoft :: Windows"]
+dependencies = ["numpy>=1.26,<2.3", "PySide6>=6.8,<7"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8,<10", "ruff>=0.9,<1", "mypy>=1.14,<3"]
+rife = ["torch>=2.6,<3", "torchvision>=0.21,<1"]
+
+[project.scripts]
+animecinemavfi = "animecinemavfi.app.main:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+animecinemavfi = ["models/catalog.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+markers = ["integration: requires real FFmpeg", "rife: requires official model and torch", "cuda: requires CUDA hardware and PyTorch", "nvenc: requires NVENC hardware and driver", "windows: requires Windows"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.11"
+mypy_path = "src"
+files = ["src"]
+check_untyped_defs = true
+disallow_untyped_defs = true
+no_implicit_optional = true
+warn_unused_ignores = true
+
+[[tool.mypy.overrides]]
+module = ["torch.*", "cv2.*"]
+ignore_missing_imports = true
