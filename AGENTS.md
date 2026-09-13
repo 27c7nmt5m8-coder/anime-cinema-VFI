@@ -25,6 +25,22 @@
 | `src/animecinemavfi/interpolation/`, `models/` | 補間契約、RIFE、モデル登録・検査 |
 | `tests/`, `scripts/`, `docs/` | 回帰テスト、検証ツール、設計・実機検証手順 |
 
+## GitHub / Codex の標準開発フロー
+
+GitHub の `main` を正本かつ安定版として扱います。Codex を含む自動修正では、ユーザーが明示的に別方式を指定しない限り、次の流れを標準とします。
+
+1. 作業開始前に `main` の現行コード、`AGENTS.md`、関連設計文書、直近の変更を確認します。
+2. 原則として `main` を直接変更せず、目的が分かる専用branchを作ります。例: `fix/v012-av-sync`、`feat/v020-motion-director`。
+3. 変更範囲を必要最小限に限定し、ユーザーから明示されていない補間ロジック、色管理、A/V同期、モデル選択、出力互換性を勝手に変更しません。
+4. 不具合修正では症状だけでなく根本原因を特定し、可能なら修正前に再現テストまたは回帰テストを追加します。Mock、fixture、CPU代替経路と実CUDA/RIFE実装の仕様差が原因なら、テスト側も実仕様に合わせます。
+5. 既存テストを削除・弱体化せず、変更に対応するテストを追加して標準ゲートを実行します。
+6. 変更差分を確認し、`VideoFrame` / `FrameFormat`、PTS、scene cut、色タグ/range/SAR/bit depth、音声・字幕保持、モデルハッシュ、OOM回復、リソース解放への副作用がないかレビューします。
+7. 修正branchにコミットし、`main` 向けPull Requestを作ります。PR本文には変更理由、変更ファイル、追加テスト、検証結果、実機未測定項目を明記します。
+8. CIとレビュー結果を確認します。CUDA/GPU、NVENC、VRAM、実動画A/V同期、画質・性能など実機依存項目は、実測前に「検証済み」と扱いません。
+9. ランタイムに影響する変更は、必要なWindows 11/GPU実機確認が完了して問題がなければPRをマージします。問題があれば同じbranch/PRで最小限の修正を続けます。文書のみの変更など実機影響がない場合は、CIと差分レビューを基準にします。
+
+ZIPやチャット添付ファイルが提供された場合も、GitHub版との対応関係を確認し、可能ならGitHubを正本として差分管理します。GitHubへ反映できない場合だけ一時的にZIPベースで作業し、その状態を明記します。
+
 ## 環境と検証
 
 Windows + Practical-RIFEの基準は64bit Python 3.11です。依存関係は`requirements-core.txt`と`pyproject.toml`に従い、仮想環境で導入します。FFmpegとFFprobeが必要です。LinuxのGUIテストにはQtのランタイム依存が必要で、CIの導入手順を参照してください。
@@ -43,6 +59,22 @@ python -m pytest -q -m "not rife"
 - 通常CIはWindows/LinuxのCPU検証です。実モデル・CUDA・NVENCの検証は`docs/WINDOWS_VALIDATION.md`と対応する手動ワークフローに従い、必要なモデル・実機で行います。
 - skipした理由と未測定の範囲を報告します。GitHubのWindowsランナーで通ったことを、Windows 11実機やGPU性能の検証済みと表現しません。
 - テスト素材は人工生成データを使います。実動画、モデル重み、個人の設定・パス、認証情報をコミットしません。
+
+## 検証結果の区分
+
+PRと完了報告では、少なくとも次を区別して記録します。実行していない項目は「未実測」とします。
+
+- **機能回帰**: unit/integration/GUI/CLI、例外処理、キャンセル・cleanup。
+- **画質・モーション回帰**: Original Motion Preservation、scene cut、HOLD/補間判定、元フレーム保持。
+- **A/V同期**: PTS、duration、音声・字幕mux、長尺ドリフト。人工fixtureと実動画検証を区別します。
+- **色管理**: SDRタグ、range、SAR、bit depth、FFmpeg入出力。必要に応じて実FFmpegで確認します。
+- **RIFE整合性**: 固定commit、モデルハッシュ、loader/runtime整合、実モデル実行。
+- **CUDA/GPU**: 対象GPU、driver、CUDA/PyTorch、実行可否。CPU/mock結果で代用しません。
+- **性能/VRAM**: fps、frame time、VRAM peak、OOM発生条件、fallback回数。対象GPU実機でのみ性能値を確定します。
+- **OOM時の品質**: fallbackがどの区間に影響したかを区別し、全体画質が同等だったと未測定で断定しません。
+- **エンコード**: NVENC/CPU encoder、出力検証、A/V保持。実機依存backendは別に記録します。
+
+GPUや実動画が使えない環境では、CPU/Mock/CIで確認できた範囲を明示したうえで、`GPU実測未実施`、`実動画A/V同期未実測`、`性能未実測`などを残してください。
 
 ## 記録と配布ファイル
 
